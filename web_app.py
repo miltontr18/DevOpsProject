@@ -1,29 +1,21 @@
 from flask import Flask
-import pymysql
-
-
-
-schema_name = "mydb"
-
-# Establishing a connection to DB
-conn = pymysql.connect(host='127.0.0.1', port=3306, user='user', passwd='password', db=schema_name)
-conn.autocommit(True)
+import requests
 
 app = Flask(__name__)
 
-@app.route('/users/get_user_data/<user_id>')  # This route remains for HTML display
-def get_user_data_html(user_id):
-    cursor = conn.cursor()
-    db_user = "SELECT user_name FROM users WHERE user_id = %s"
-    cursor.execute(db_user, (user_id,))
-    result = cursor.fetchone()
+@app.route('/')
+def index():
+    return "<h1>Welcome to the User Data App!</h1>"
 
-    if result:
-        user_name = result[0]
-        return f"<H1 id='user'>{user_name}</H1>"
+@app.route('/get_user_data/<user_id>')
+def get_user_data(user_id): # function takes the user_id from the URL as an argument.
+    users_api = f"http://127.0.0.1:5000/users/{user_id}" # compiles the URL for the users API by adding the provided user_id.
+    user_name = requests.get(users_api).json().get('user_name') # makes a GET request to the users API and extracts the 'user_name' from the JSON response.
+    if user_name:
+        return f"<h1 id='user'>User Name: {user_name}</h1>", 200 # If a user_name is found (i.e., the API request was successful and returned a name), this line returns an HTML showing the user's name
     else:
-        return "<H1 id='user'>User not found</H1>"  # More informative message
+        return "<h1 id='error'>User not found</h1>", 404
+    # If the user_name is not found, line returns an HTML showiing the user was not found
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001)
-
+    app.run(host='127.0.0.1', port=5001, debug=True)
