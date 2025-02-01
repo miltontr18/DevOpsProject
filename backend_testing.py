@@ -1,8 +1,8 @@
 import requests
 
 
-url = 'http://127.0.0.1:5000/users/2'
-name = 'Smith'
+url = 'http://127.0.0.1:5000/users/40'
+name = 'bricks'
 # 1. POST the data
 post_user = requests.post(url, json={"user_name": name})
 
@@ -20,10 +20,10 @@ if get_user.status_code == 200:
     print(get_data)
 
     # 3. Assert that the retrieved data matches the posted data
-    if get_data.get('user_name') == name:  # Corrected expected name to "timmmy"
+    if get_data.get('user_name') == name:  # expected name
         print("Data matches the posted data!")
     else:
         print(f"Data mismatch! Expected 'timmmy', got '{get_data.get('user_name')}'")
 else:
-    print(f"GET request failed: {get_user.status_code} - {get_user.text}") #Handle the GET error as well
+    print(f"GET request failed: {get_user.status_code} - {get_user.text}") #Handle the GET error
 

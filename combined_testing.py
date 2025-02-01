@@ -4,14 +4,13 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import time
+import db_connector
 
-from db_connector import schema_name
-
-test_id =36 # The ID of the test data in the config table
+test_id = 38# The ID of the test data in the config table
 
 def get_test_data(test_id):  # Use test_id for clarity
     try:
-        with pymysql.connect(host='127.0.0.1', port=3306, user='user', passwd='password', db='mydb') as conn:
+        with db_connector.mysql_users() as conn:
             with conn.cursor() as cursor:
                 query = "SELECT user_name, backend_url, frontend_url FROM config WHERE id = %s"  # Select all needed columns
                 cursor.execute(query, (test_id,))
@@ -67,8 +66,8 @@ else:
 
 # --- Database Check ---
 try:
-    connection = pymysql.connect(host='127.0.0.1', port=3306, user='user', passwd='password', db='mydb') # Replace with your DB credentials
-    with connection.cursor() as cursor:
+    conn =db_connector.mysql_users()  # Replace with your DB credentials
+    with conn.cursor() as cursor:
         db_user = "SELECT user_name FROM users WHERE user_id = %s" # Assumes 'id' is the primary key
         cursor.execute(db_user, (test_id))
         result = cursor.fetchone()
@@ -87,8 +86,8 @@ except pymysql.Error as e:
     print(f"Database error: {e}")
 
 finally:
-    if connection:
-        connection.close()
+    if conn:
+        conn.close()
 
 
 # --- Selenium UI Test ---
