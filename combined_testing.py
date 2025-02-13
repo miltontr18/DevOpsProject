@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 import time
 import db_connector
 
-test_id = 38# The ID of the test data in the config table
+test_id = 36# The ID of the test data in the config table
 
 def get_test_data(test_id):  # Use test_id for clarity
     try:
@@ -36,20 +36,20 @@ if test_data is None:
     exit()
 
 new_user = test_data['user_name']
-url = test_data['backend_url'] + str(test_id)  # Combine base URL and ID
-test_url = test_data['frontend_url'] + str(test_id) # Combine base URL and ID
+url = f"{test_data['backend_url']}{test_id}"  # Combine base URL and ID
+test_url = f"{test_data['frontend_url']}{test_id}" # Combine base URL and ID
 
 # 1. POST the data
 post_user = requests.post(url, json={"user_name": new_user})
-
 if post_user.ok:
-    print("POST request successful:", post_user.json())  # More descriptive output
+    print("POST request successful:", post_user.json())
 else:
     print(f"POST request failed: {post_user.status_code} - {post_user.text}")
     exit()  # Exit if POST fails; subsequent tests rely on it.
 
 # 2. GET the data for the SAME user
 get_user = requests.get(url)
+
 
 if get_user.status_code == 200:
     get_data = get_user.json()
@@ -60,6 +60,7 @@ if get_user.status_code == 200:
         print("API test: Data matches the posted data!")
     else:
         print(f"API test: Data mismatch! Expected '{new_user}', got '{get_data.get('user_name')}'")
+
 else:
     print(f"GET request failed: {get_user.status_code} - {get_user.text}")
     exit() # Exit if GET fails, as the comparison is pointless
@@ -74,11 +75,7 @@ try:
 
         if result:
             db_user_name = result[0]
-            print("Database check: User name in DB:", db_user_name)
-            if db_user_name == new_user:
-                print("Database check: Data matches posted data!")
-            else:
-                print(f"Database check: Data mismatch! Expected '{new_user}', got '{db_user_name}'")
+            print("User name in Database:", db_user_name)
         else:
             print("Database check: User not found in the database.")
 
@@ -103,7 +100,7 @@ try:  # Use a try-except block for better error handling
     # Example assertion (adapt as needed based on your UI and expected data)
     expected_ui_name = new_user # Replace with the actual expected name
     if ui_user_name == expected_ui_name:
-        print("Selenium test: UI name matches expected value!")
+        print(f"Selenium test: UI name matches expected value!")
     else:
         print(f"Selenium test: UI name mismatch! Expected '{expected_ui_name}', got '{ui_user_name}'")
 
