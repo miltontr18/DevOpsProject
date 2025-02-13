@@ -1,18 +1,21 @@
 import requests
-import db_connector
+import db_connector #Calling my db connection set up in db_connector
 
+# Test data
 test_id = 8
 url = f'http://127.0.0.1:5000/users/{test_id}'
 name = 'Jake'
-# 1. POST the data
-post_user = requests.post(url, json={"user_name": name})
-if not post_user.ok:
+
+# 1. Posting a new user data to the REST API using POST method.
+post_user = requests.post(url, json={"user_name": name}) # Sending Post request to the API
+if not post_user.ok: # Error handling
     print(f"POST request failed: {post_user.status_code} - {post_user.text}")
     exit()
 
-# 2. GET the data for the SAME user.
-get_user = requests.get(url)
-if get_user.status_code == 200:
+# 2. Submitting a GET request to make sure status code is 200 and data equals to the posted
+# data.
+get_user = requests.get(url) # Sending Post request to the API
+if get_user.status_code == 200: # Checking if status code matches
     get_data = get_user.json()
     print(get_data)
 
@@ -25,6 +28,7 @@ else:
     print(f"GET request failed: {get_user.status_code} - {get_user.text}") #Handle the GET error
 conn =db_connector.mysql_users()
 
+# 3. Checking posted data was stored inside DB (users table).
 try:
     with conn.cursor() as cursor:
         db_user = f"SELECT user_name FROM users WHERE user_id = {test_id}" # Assumes 'id' is the primary key

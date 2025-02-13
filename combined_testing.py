@@ -39,7 +39,7 @@ new_user = test_data['user_name']
 url = f"{test_data['backend_url']}{test_id}"  # Combine base URL and ID
 test_url = f"{test_data['frontend_url']}{test_id}" # Combine base URL and ID
 
-# 1. POST the data
+# 1. Posting new user data to the REST API using POST method.
 post_user = requests.post(url, json={"user_name": new_user})
 if post_user.ok:
     print("POST request successful:", post_user.json())
@@ -47,7 +47,7 @@ else:
     print(f"POST request failed: {post_user.status_code} - {post_user.text}")
     exit()  # Exit if POST fails; subsequent tests rely on it.
 
-# 2. GET the data for the SAME user
+# 2. Submitting a GET request to make sure data equals to the posted data.
 get_user = requests.get(url)
 
 
@@ -65,7 +65,7 @@ else:
     print(f"GET request failed: {get_user.status_code} - {get_user.text}")
     exit() # Exit if GET fails, as the comparison is pointless
 
-# --- Database Check ---
+# Checking posted data was stored inside DB (users table).
 try:
     conn =db_connector.mysql_users()  # Replace with your DB credentials
     with conn.cursor() as cursor:
@@ -87,29 +87,30 @@ finally:
         conn.close()
 
 
-# --- Selenium UI Test ---
+# Starting a Selenium Webdriver session.
 try:  # Use a try-except block for better error handling
-    driver = webdriver.Chrome(service=Service(""))  # You'll likely need to specify the path to your ChromeDriver
-    driver.get(test_url)  # Different URL and user ID for Selenium test
+    driver = webdriver.Chrome(service=Service(""))  # Starting a Selenium Webdriver session.
+    driver.get(test_url)  # Navigating to web interface URL using the new user id.
     time.sleep(5)  # Adjust sleep time as need.
 
-    user_name_element = driver.find_element(By.ID, value="user") # More descriptive variable name
-    ui_user_name = user_name_element.text # Store text in variable
-    print("UI user name:", ui_user_name) # Print the value
-
-    # Example assertion (adapt as needed based on your UI and expected data)
-    expected_ui_name = new_user # Replace with the actual expected name
+# Checking that the user name is correct.
+    user_name_element = driver.find_element(By.ID, value="user")
+    ui_user_name = user_name_element.text
+    print("UI user name:", ui_user_name)
+    # Checking if user name matches
+    expected_ui_name = new_user
     if ui_user_name == expected_ui_name:
         print(f"Selenium test: UI name matches expected value!")
     else:
         print(f"Selenium test: UI name mismatch! Expected '{expected_ui_name}', got '{ui_user_name}'")
 
-    time.sleep(2) # Small delay before closing
+    time.sleep(2)
     driver.close()
 except Exception as e:  # Catch potential Selenium errors
     print(f"Selenium test error: {e}")
-finally: # Ensure driver is closed even if exception occurs
+
+finally:
     try:
-        driver.quit() # Use quit to close all associated windows and the webdriver process.
+        driver.quit()
     except:
-        pass # If driver is not initialized, then do nothing
+        pass
