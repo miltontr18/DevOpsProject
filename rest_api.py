@@ -28,7 +28,7 @@ def users(user_id):
         conn.close()  # Closes db connection
 
 
-def get_user(conn, user_id):  # Function to retrieve a user
+def get_user(conn, user_id):  # Function to retrieve a user.
     cursor = conn.cursor()  # Create a database cursor
     try:
         db_user = f"SELECT user_name FROM users WHERE user_id = {user_id}"  # SQL query to select user name

@@ -10,7 +10,7 @@ if not post_user.ok:
     print(f"POST request failed: {post_user.status_code} - {post_user.text}")
     exit()
 
-# 2. GET the data for the SAME user
+# 2. GET the data for the SAME user.
 get_user = requests.get(url)
 if get_user.status_code == 200:
     get_data = get_user.json()

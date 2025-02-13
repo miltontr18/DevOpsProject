@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 import time
 import db_connector
 
-test_id = 36# The ID of the test data in the config table
+test_id = 36# The ID of the test data in the config table.
 
 def get_test_data(test_id):  # Use test_id for clarity
     try:
